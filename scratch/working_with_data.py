@@ -1,4 +1,4 @@
-# (Chapter 10 reworked: copy & paste the code into iphyton to see all examples)
+# (Chapter reworked: You can copy & paste the code into iphyton to see all examples)
 
 # --- Arbeiten mit Daten
 # --- Erkunden eindimensionaler Daten
@@ -18,6 +18,7 @@ def make_histogram(points: List[float], bucket_size: float) -> Dict[float, int]:
     return Counter(bucketize(point, bucket_size) for point in points)
 
 def plot_histogram(points: List[float], bucket_size: float, title: str = ""):
+    """Plots a histogram"""
     histogram = make_histogram(points, bucket_size)
     plt.bar(histogram.keys(), histogram.values(), width=bucket_size)
     plt.title(title)
@@ -34,20 +35,17 @@ uniform = [200 * random.random() - 100 for _ in range(10000)]
 normal = [57 * inverse_normal_cdf(random.random())
             for _ in range(10000)]
 
-# I don't know why this is necessary
-plt.gca().clear()
-plt.close()
-
+plt.figure("10-1")
 plot_histogram(uniform, 10, "Figure 10-1: Uniform Histogram")
-#plt.savefig('im/10-01_working_histogram_uniform.png')
+plt.savefig('im/10-01_working_histogram_uniform.png')
 plt.show()
-plt.gca().clear()
 plt.close()
 
+plt.figure("10-2")
 plot_histogram(normal, 10, "Figure 10-2: Normal Histogram")
-#plt.savefig('im/10-02_working_histogram_normal.png')
+plt.savefig('im/10-02_working_histogram_normal.png')
 plt.show()
-plt.gca().clear()
+plt.close()
 
 # --- Zwei Dimensionen
 
@@ -59,20 +57,21 @@ xs = [random_normal() for _ in range(1000)]
 ys1 = [ x + random_normal() / 2 for x in xs]
 ys2 = [-x + random_normal() / 2 for x in xs]
 
+plt.figure("10-3")
 plt.scatter(xs, ys1, marker='.', color='black', label='ys1')
 plt.scatter(xs, ys2, marker='.', color='gray',  label='ys2')
 plt.xlabel('xs')
 plt.ylabel('ys')
 plt.legend(loc=9)
 plt.title("Figure 10-3: Very Different Joint Distributions")
-#plt.savefig('im/10-03_working_scatter.png')
+plt.savefig('im/10-03_working_scatter.png')
 plt.show()
-plt.gca().clear()
+plt.close()
 
 from scratch.statistics import correlation
 
-print(correlation(xs, ys1))      # about 0.9
-print(correlation(xs, ys2))      # about -0.9
+print( "correlation(xs, ys1)", "=", correlation(xs, ys1))      # about 0.9
+print( "correlation(xs, ys2)", "=", correlation(xs, ys2))      # about -0.9
 
 assert 0.89 < correlation(xs, ys1) < 0.91
 assert -0.91 < correlation(xs, ys2) < -0.89
@@ -121,8 +120,10 @@ corr_data = [list(col) for col in zip(*corr_rows)]
 # corr_data is a list of four 100-d vectors
 num_vectors = len(corr_data)
 
-plt.title("Figure 10-4: Scatterplot Matrix")
-fig, ax = plt.subplots(num_vectors, num_vectors)
+#plt.figure("10-4")
+#plt.title("Figure 10-4: Scatterplot Matrix")
+fig, ax = plt.subplots(num_vectors, num_vectors, num="10-4")
+fig.suptitle("Figure 10-4: Scatterplot Matrix") 
 
 for i in range(num_vectors):
     for j in range(num_vectors):
@@ -144,11 +145,9 @@ for i in range(num_vectors):
 ax[-1][-1].set_xlim(ax[0][-1].get_xlim())
 ax[0][0].set_ylim(ax[0][1].get_ylim())
 
-#plt.savefig('im/10-04_working_scatterplot_matrix.png')
+plt.savefig('im/10-04_working_scatterplot_matrix.png')
 plt.show()
-plt.gca().clear()
 plt.close()
-plt.clf()
 
 # --- NamedTuple
 
@@ -367,6 +366,7 @@ def scale(data: List[Vector]) -> Tuple[Vector, Vector]:
 
 vectors = [[-3, -1, 1], [-1, 0, 1], [1, 1, 1]]
 means, stdevs = scale(vectors)
+
 assert means == [-1, 0, 1]
 assert stdevs == [2, 1, 0]
 
@@ -390,6 +390,7 @@ def rescale(data: List[Vector]) -> List[Vector]:
     return rescaled
 
 means, stdevs = scale(rescale(vectors))
+
 assert means == [0, 0, 1]
 assert stdevs == [1, 1, 0]
 
@@ -413,7 +414,7 @@ def primes_up_to(n: int) -> List[int]:
 
     return primes
 
-my_primes = primes_up_to(100_000)
+my_primes = primes_up_to(10000)
 
 # --- Hauptkomponentenanalyse
 
@@ -519,13 +520,15 @@ pca_data = [
 [25.2049825789225,-14.1592086208169]
 ]
 
+plt.figure("10-6")
 plt.title("Figure 10-6: Data with 'wrong' axis")
-plt.scatter([v_i[0] for v_i in pca_data], [v_i[1] for v_i in pca_data])
+plt.scatter([v[0] for v in pca_data], [v[1] for v in pca_data])
 plt.xlim(-20, 50)
 plt.ylim(-40, 10)
-#plt.savefig("im/10-06_data_with_wrong_axix.png")
+plt.grid(linestyle="--")
+plt.savefig("im/10-06_data_with_wrong_axix.png")
 plt.show()
-plt.gca().clear()
+plt.close()
 
 from scratch.linear_algebra import subtract
 
@@ -536,17 +539,22 @@ def de_mean(data: List[Vector]) -> List[Vector]:
 
 data = de_mean(pca_data)
 
+plt.figure("10-7")
 plt.title("Figure 10-7: Data after subtraction of mean")
-plt.scatter([v_i[0] for v_i in data], [v_i[1] for v_i in data])
+plt.scatter([v[0] for v in data], [v[1] for v in data])
 plt.xlim(-40, 30)
 plt.ylim(-30, 30)
-#plt.savefig("im/10-07_data_after_substraction_of_mean.png")
+plt.grid(linestyle="--")
+plt.savefig("im/10-07_data_after_substraction_of_mean.png")
 plt.show()
-plt.gca().clear()
+plt.close()
 
 from scratch.linear_algebra import magnitude
 
 def direction(w: Vector) -> Vector:
+    """
+    Returns the direction of w
+    """
     mag = magnitude(w)
     return [w_i / mag for w_i in w]
 
@@ -572,6 +580,7 @@ from scratch.gradient_descent import gradient_step
 def first_principal_component(data: List[Vector],
                               n: int = 100,
                               step_size: float = 0.1) -> Vector:
+    """find the first principal component"""
     # Start with a random guess
     guess = [1.0 for _ in data[0]]
 
@@ -598,15 +607,17 @@ assert 0.382 < fpc[1] < 0.384
 
 dir = [project(v, fpc) for v in data[:20]]
 
+plt.figure("10-8")
 plt.title("Figure 10-8: First principal component")
-plt.scatter([v_i[0] for v_i in data], [v_i[1] for v_i in data])
+plt.scatter([v[0] for v in data], [v[1] for v in data])
 # direction of first principal component
-plt.plot([v_i[0] for v_i in dir], [v_i[1] for v_i in dir], "r") 
+plt.plot([v[0] for v in dir], [v[1] for v in dir], "r") 
 plt.xlim(-40, 30)
 plt.ylim(-30, 30)
-#plt.savefig("im/10-08_first_principal_component.png")
+plt.grid(linestyle="--")
+plt.savefig("im/10-08_first_principal_component.png")
 plt.show()
-plt.gca().clear()
+plt.close()
 
 from scratch.linear_algebra import subtract
 
@@ -615,19 +626,23 @@ def remove_projection_from_vector(v: Vector, w: Vector) -> Vector:
     return subtract(v, project(v, w))
 
 def remove_projection(data: List[Vector], w: Vector) -> List[Vector]:
+    """projects data onto w and subtracts the result from the data"""
     return [remove_projection_from_vector(v, w) for v in data]
 
-linear_data = remove_projection(data, component)
+linear_data = remove_projection(data, fpc)
 
+plt.figure("10-9")
 plt.title("Figure 10-9: Data after removal of first principal component")
-plt.scatter([v_i[0] for v_i in linear_data], [v_i[1] for v_i in linear_data])
+plt.scatter([v[0] for v in linear_data], [v[1] for v in linear_data])
 plt.xlim(-10, 10)
 plt.ylim(-8, 8)
-#plt.savefig("im/10-09_data_after_removal_of_first_principal_component.png")
+plt.grid(linestyle="--")
+plt.savefig("im/10-09_data_after_removal_of_first_principal_component.png")
 plt.show()
-plt.gca().clear()
+plt.close()
 
 def pca(data: List[Vector], num_components: int) -> List[Vector]:
+    """find principal components"""
     components: List[Vector] = []
     for _ in range(num_components):
         component = first_principal_component(data)
@@ -636,27 +651,32 @@ def pca(data: List[Vector], num_components: int) -> List[Vector]:
 
     return components
 
-def transform_vector(v: Vector, components: List[Vector]) -> Vector:
-    return [dot(v, w) for w in components]
-
-def transform(data: List[Vector], components: List[Vector]) -> List[Vector]:
-    return [transform_vector(v, components) for v in data]
-
 components = pca(data, 2)
 dir0 = [project(v, components[0]) for v in data[:20]]
 dir1 = [project(v, components[1]) for v in data]
 
+plt.figure("10-10")
 plt.title("Figure 10-10: First two principal components")
-plt.scatter([v_i[0] for v_i in data], [v_i[1] for v_i in data])
-# direction of first principal component
-plt.plot([v_i[0] for v_i in dir0], [v_i[1] for v_i in dir0], "r") 
-# direction of second principal component
-plt.plot([v_i[0] for v_i in dir1], [v_i[1] for v_i in dir1], "r") 
+# Scatter plot of raw data
+plt.scatter([v[0] for v in data], [v[1] for v in data])
+# Plot direction of first principal component
+plt.plot([v[0] for v in dir0], [v[1] for v in dir0], "r") 
+# Plot direction of second principal component
+plt.plot([v[0] for v in dir1], [v[1] for v in dir1], "r") 
 plt.xlim(-40, 30)
 plt.ylim(-30, 30)
-#plt.savefig("im/10-10_first_two_principal_components.png")
+plt.grid(linestyle="--")
+plt.savefig("im/10-10_first_two_principal_components.png")
 plt.show()
-plt.gca().clear()
+plt.close()
+
+def transform_vector(v: Vector, components: List[Vector]) -> Vector:
+    """transform vector by principal components"""
+    return [dot(v, w) for w in components]
+
+def transform(data: List[Vector], components: List[Vector]) -> List[Vector]:
+    """transform data by principal components"""
+    return [transform_vector(v, components) for v in data]
 
 # --- Main
 

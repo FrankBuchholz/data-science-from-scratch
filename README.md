@@ -1,20 +1,19 @@
 Data Science from Scratch
 =========================
 
-Here's all the code and examples from the second edition of my book _Data Science from Scratch_. They require at least Python 3.6.
+Here's all the code and examples from the second edition of my book __[Data Science from Scratch](http://joelgrus.com/2015/04/26/data-science-from-scratch-first-principles-with-python/)__. They require at least Python 3.6.
 
 (If you're looking for the code and examples from the first edition, that's in the `first-edition` folder.)
 
-If you want to use the code, you should be able to clone the repo and just do things like
+If you want to use the code, you should be able to clone the repo and just do things like this (you can omit the print function in interactive mode): 
 
+```python
+from scratch.linear_algebra import distance, vector_mean
+v = [1, 2, 3]
+w = [4, 5, 6]
+print( distance(v, w) )
+print( vector_mean([v, w]) )
 ```
-In [1]: from scratch.linear_algebra import dot
-
-In [2]: dot([1, 2, 3], [4, 5, 6])
-Out[2]: 32
-```
-
-and so on and so forth.
 
 Two notes:
 
@@ -29,6 +28,11 @@ export PYTHONPATH=/path/to/where/you/cloned/this/repo
 (substituting in the real path, of course).
 
 If you are on Windows, it's [potentially more complicated](https://stackoverflow.com/questions/3701646/how-to-add-to-the-pythonpath-in-windows-so-it-finds-my-modules-packages).
+
+Additionally, I've collected all the [links](/blob/master/links.md) from the book.
+
+And, by popular demand, I made an index of functions defined in the book (which might be outdated), by chapter and page number (of the english version of the book). 
+The data is in a [spreadsheet](https://docs.google.com/spreadsheets/d/1mjGp94ehfxWOEaAFJsPiHqIeOioPH1vN1PdOE6v1az8/edit?usp=sharing). I also made a toy (experimental) [searchable webapp](http://joelgrus.com/experiments/function-index/).
 
 ## Table of Contents
 

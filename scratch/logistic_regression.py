@@ -1,3 +1,5 @@
+# (Chapter reworked: You can copy & paste the code into iphyton to see all examples)
+# (Chapter "Support Vector Machines" is missing)
 
 # --- Die Aufgabe
 
@@ -36,7 +38,22 @@ tuples = [(0.7,48000,1),(1.9,48000,0),(2.5,60000,1),(4.2,63000,0),(6,76000,0),(6
           (4.2,78000,0),(1.1,54000,0),(6.2,60000,0),(2.9,59000,0),(2.1,52000,0),(8.2,87000,0),
           (4.8,73000,0),(2.2,42000,1),(9.1,98000,0),(6.5,84000,0),(6.9,73000,0),(5.1,72000,0),
           (9.1,69000,1),(9.8,79000,1),]
+
 data = [list(row) for row in tuples]
+
+paid =   [row for row in data if row[2] == 1]      # paid_accounts
+unpaid = [row for row in data if row[2] == 0]      # unpaid_accounts
+
+plt.figure("16-1")
+plt.title('Figure 16-1: Paying and not paying users')
+plt.scatter([row[0] for row in paid],   [row[1] for row in paid],   label="paid",  color='green', marker='o')
+plt.scatter([row[0] for row in unpaid], [row[1] for row in unpaid], label="unpaid", color='red',  marker='+')
+plt.xlabel("years experience")
+plt.ylabel("annual salary")
+plt.legend()
+plt.savefig('im/16-01_paying_and_not_paying_users.png')
+plt.show()
+plt.close()
 
 xs = [[1.0] + row[:2] for row in data]  # [1, experience, salary]
 ys = [row[2] for row in data]           # paid_account
@@ -49,17 +66,17 @@ from scratch.gradient_descent import gradient_step
 learning_rate = 0.001
 rescaled_xs = rescale(xs)
 beta = least_squares_fit(rescaled_xs, ys, learning_rate, 1000, 1)
-# [0.26, 0.43, -0.43]
+print( "beta", "=", beta ) # [0.26, 0.43, -0.43]
 predictions = [predict(x_i, beta) for x_i in rescaled_xs]
 
+plt.figure("16-2")
+plt.title('Figure 16-2: Linear regression for probabilities')
 plt.scatter(predictions, ys)
 plt.xlabel("predicted")
 plt.ylabel("actual")
+plt.savefig('im/16-02_linear_regression_for_probabilities.png')
 plt.show()
-#plt.savefig('im/linear_regression_for_probabilities.png')
 plt.close()
-plt.clf()
-plt.gca().clear()    
 
 # --- Die logistische Funktion
 
@@ -110,105 +127,84 @@ def negative_log_gradient(xs: List[Vector],
     return vector_sum([_negative_log_gradient(x, y, beta)
                        for x, y in zip(xs, ys)])
 
+# --- Anwendung des Modells
+    
+from scratch.machine_learning import train_test_split
+import random
+import tqdm
+
+random.seed(0)
+x_train, x_test, y_train, y_test = train_test_split(rescaled_xs, ys, 0.33)
+
+learning_rate = 0.01
+
+# pick a random starting point
+beta = [random.random() for _ in range(3)]
+
+with tqdm.trange(5000) as t:
+    for epoch in t:
+        gradient = negative_log_gradient(x_train, y_train, beta)
+        beta = gradient_step(beta, gradient, -learning_rate)
+        loss = negative_log_likelihood(x_train, y_train, beta)
+        t.set_description(f"loss: {loss:.3f} beta: {beta}")
+
+from scratch.working_with_data import scale
+
+means, stdevs = scale(xs)
+print( "means", "=", means )
+print( "stdevs", "=", stdevs )
+
+beta_unscaled = [(beta[0]
+                    - beta[1] * means[1] / stdevs[1]
+                    - beta[2] * means[2] / stdevs[2]),
+                    beta[1] / stdevs[1],
+                    beta[2] / stdevs[2]]
+print( "beta_unscaled", "=", beta_unscaled ) # [8.9, 1.6, -0.000288]
+
+assert (negative_log_likelihood(xs, ys, beta_unscaled) ==
+        negative_log_likelihood(rescaled_xs, ys, beta))
+
+# --- Anpassungsgüte
+
+true_positives = false_positives = true_negatives = false_negatives = 0
+
+for x_i, y_i in zip(x_test, y_test):
+    prediction = logistic(dot(beta, x_i))
+
+    if y_i == 1 and prediction >= 0.5:  # TP: paid and we predict paid
+        true_positives += 1
+    elif y_i == 1:                      # FN: paid and we predict unpaid
+        false_negatives += 1
+    elif prediction >= 0.5:             # FP: unpaid and we predict paid
+        false_positives += 1
+    else:                               # TN: unpaid and we predict unpaid
+        true_negatives += 1
+
+precision = true_positives / (true_positives + false_positives)
+recall = true_positives / (true_positives + false_negatives)
+
+print( "precision", "=", precision )
+print( "recall", "=", recall )
+
+assert precision == 0.75
+assert recall == 0.8
+
+predictions = [logistic(dot(beta, x_i)) for x_i in x_test]
+
+plt.figure("16-4")
+plt.title('Figure 16-4: Logistic Regression Predicted vs. Actual')
+plt.scatter(predictions, y_test, marker='+')
+plt.xlabel("predicted probability")
+plt.ylabel("actual outcome")
+plt.savefig('im/16-04_logistic_regression_predicted_vs_actual.png')
+plt.show()
+plt.close()
+
+# --- Support Vector Machines
+
 # --- Main
 
 def main():
-    
-    # --- Die Aufgabe
-
-    from matplotlib import pyplot as plt
-    from scratch.working_with_data import rescale
-    from scratch.multiple_regression import least_squares_fit, predict
-    from scratch.gradient_descent import gradient_step
-    
-    learning_rate = 0.001
-    rescaled_xs = rescale(xs)
-    beta = least_squares_fit(rescaled_xs, ys, learning_rate, 1000, 1)
-    # [0.26, 0.43, -0.43]
-    predictions = [predict(x_i, beta) for x_i in rescaled_xs]
-    
-    plt.scatter(predictions, ys)
-    plt.xlabel("predicted")
-    plt.ylabel("actual")
-    plt.show()
-    #plt.savefig('im/linear_regression_for_probabilities.png')
-    plt.close()
-    plt.clf()
-    plt.gca().clear()    
-    
-    from scratch.machine_learning import train_test_split
-    import random
-    import tqdm
-    
-    random.seed(0)
-    x_train, x_test, y_train, y_test = train_test_split(rescaled_xs, ys, 0.33)
-    
-    learning_rate = 0.01
-    
-    # pick a random starting point
-    beta = [random.random() for _ in range(3)]
-    
-    with tqdm.trange(5000) as t:
-        for epoch in t:
-            gradient = negative_log_gradient(x_train, y_train, beta)
-            beta = gradient_step(beta, gradient, -learning_rate)
-            loss = negative_log_likelihood(x_train, y_train, beta)
-            t.set_description(f"loss: {loss:.3f} beta: {beta}")
-    
-    from scratch.working_with_data import scale
-    
-    means, stdevs = scale(xs)
-    beta_unscaled = [(beta[0]
-                      - beta[1] * means[1] / stdevs[1]
-                      - beta[2] * means[2] / stdevs[2]),
-                     beta[1] / stdevs[1],
-                     beta[2] / stdevs[2]]
-    # [8.9, 1.6, -0.000288]
-    
-    
-    
-    assert (negative_log_likelihood(xs, ys, beta_unscaled) ==
-            negative_log_likelihood(rescaled_xs, ys, beta))
-    
-    true_positives = false_positives = true_negatives = false_negatives = 0
-    
-    for x_i, y_i in zip(x_test, y_test):
-        prediction = logistic(dot(beta, x_i))
-    
-        if y_i == 1 and prediction >= 0.5:  # TP: paid and we predict paid
-            true_positives += 1
-        elif y_i == 1:                      # FN: paid and we predict unpaid
-            false_negatives += 1
-        elif prediction >= 0.5:             # FP: unpaid and we predict paid
-            false_positives += 1
-        else:                               # TN: unpaid and we predict unpaid
-            true_negatives += 1
-    
-    precision = true_positives / (true_positives + false_positives)
-    recall = true_positives / (true_positives + false_negatives)
-    
-    
-    
-    print(precision, recall)
-    
-    assert precision == 0.75
-    assert recall == 0.8
-    
-    
-    
-    plt.clf()
-    plt.gca().clear()
-    
-    predictions = [logistic(dot(beta, x_i)) for x_i in x_test]
-    plt.scatter(predictions, y_test, marker='+')
-    plt.xlabel("predicted probability")
-    plt.ylabel("actual outcome")
-    plt.title("Logistic Regression Predicted vs. Actual")
-    # plt.show()
-    
-    
-    
-    plt.savefig('im/logistic_regression_predicted_vs_actual.png')
-    plt.gca().clear()
-    
+    pass
+       
 if __name__ == "__main__": main()
