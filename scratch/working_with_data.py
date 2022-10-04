@@ -1,3 +1,8 @@
+# (Chapter 10 reworked: copy & paste the code into iphyton to see all examples)
+
+# --- Arbeiten mit Daten
+# --- Erkunden eindimensionaler Daten
+
 from typing import List, Dict
 from collections import Counter
 import math
@@ -17,9 +22,34 @@ def plot_histogram(points: List[float], bucket_size: float, title: str = ""):
     plt.bar(histogram.keys(), histogram.values(), width=bucket_size)
     plt.title(title)
 
-
 import random
 from scratch.probability import inverse_normal_cdf
+
+random.seed(0)
+
+# uniform between -100 and 100
+uniform = [200 * random.random() - 100 for _ in range(10000)]
+
+# normal distribution with mean 0, standard deviation 57
+normal = [57 * inverse_normal_cdf(random.random())
+            for _ in range(10000)]
+
+# I don't know why this is necessary
+plt.gca().clear()
+plt.close()
+
+plot_histogram(uniform, 10, "Figure 10-1: Uniform Histogram")
+#plt.savefig('im/10-01_working_histogram_uniform.png')
+plt.show()
+plt.gca().clear()
+plt.close()
+
+plot_histogram(normal, 10, "Figure 10-2: Normal Histogram")
+#plt.savefig('im/10-02_working_histogram_normal.png')
+plt.show()
+plt.gca().clear()
+
+# --- Zwei Dimensionen
 
 def random_normal() -> float:
     """Returns a random draw from a standard normal distribution"""
@@ -34,19 +64,20 @@ plt.scatter(xs, ys2, marker='.', color='gray',  label='ys2')
 plt.xlabel('xs')
 plt.ylabel('ys')
 plt.legend(loc=9)
-plt.title("Very Different Joint Distributions")
-# plt.show()
-
-
-plt.savefig('im/working_scatter.png')
+plt.title("Figure 10-3: Very Different Joint Distributions")
+#plt.savefig('im/10-03_working_scatter.png')
+plt.show()
 plt.gca().clear()
-
 
 from scratch.statistics import correlation
 
+print(correlation(xs, ys1))      # about 0.9
+print(correlation(xs, ys2))      # about -0.9
 
 assert 0.89 < correlation(xs, ys1) < 0.91
 assert -0.91 < correlation(xs, ys2) < -0.89
+
+# --- Mehrere Dimensionen
 
 from scratch.linear_algebra import Matrix, Vector, make_matrix
 
@@ -60,13 +91,66 @@ def correlation_matrix(data: List[Vector]) -> Matrix:
 
     return make_matrix(len(data), len(data), correlation_ij)
 
-
 vectors = [xs, ys1, ys2]
+
 assert correlation_matrix(vectors) == [
     [correlation(xs,  xs), correlation(xs,  ys1), correlation(xs,  ys2)],
     [correlation(ys1, xs), correlation(ys1, ys1), correlation(ys1, ys2)],
     [correlation(ys2, xs), correlation(ys2, ys1), correlation(ys2, ys2)],
 ]
+
+from typing import List
+
+# Just some random data to show off correlation scatterplots
+num_points = 100
+
+def random_row() -> List[float]:
+    row = [0.0, 0, 0, 0]
+    row[0] = random_normal()
+    row[1] = -5 * row[0] + random_normal()
+    row[2] = row[0] + row[1] + 5 * random_normal()
+    row[3] = 6 if row[2] > -2 else 0
+    return row
+
+random.seed(0)
+# each row has 4 points, but really we want the columns
+corr_rows = [random_row() for _ in range(num_points)]
+
+corr_data = [list(col) for col in zip(*corr_rows)]
+
+# corr_data is a list of four 100-d vectors
+num_vectors = len(corr_data)
+
+plt.title("Figure 10-4: Scatterplot Matrix")
+fig, ax = plt.subplots(num_vectors, num_vectors)
+
+for i in range(num_vectors):
+    for j in range(num_vectors):
+
+        # Scatter column_j on the x-axis vs column_i on the y-axis,
+        if i != j: ax[i][j].scatter(corr_data[j], corr_data[i])
+
+        # unless i == j, in which case show the series name.
+        else: ax[i][j].annotate("series " + str(i), (0.5, 0.5),
+                                xycoords='axes fraction',
+                                ha="center", va="center")
+
+        # Then hide axis labels except left and bottom charts
+        if i < num_vectors - 1: ax[i][j].xaxis.set_visible(False)
+        if j > 0: ax[i][j].yaxis.set_visible(False)
+
+# Fix the bottom right and top left axis labels, which are wrong because
+# their charts only have text in them
+ax[-1][-1].set_xlim(ax[0][-1].get_xlim())
+ax[0][0].set_ylim(ax[0][1].get_ylim())
+
+#plt.savefig('im/10-04_working_scatterplot_matrix.png')
+plt.show()
+plt.gca().clear()
+plt.close()
+plt.clf()
+
+# --- NamedTuple
 
 import datetime
 
@@ -95,6 +179,12 @@ price = StockPrice('MSFT', datetime.date(2018, 12, 14), 106.03)
 assert price.symbol == 'MSFT'
 assert price.closing_price == 106.03
 assert price.is_high_tech()
+
+# --- Datenklassen
+
+# siehe Seite 136
+
+# --- Bereinigen und Umformen
 
 from dateutil.parser import parse
 
@@ -141,7 +231,21 @@ assert try_parse_row(["MSFT", "2018-12-14", "x"]) is None
 # But should return same as before if data is good.
 assert try_parse_row(["MSFT", "2018-12-14", "106.03"]) == stock
 
+# Validate small file
+import csv
 
+data: List[StockPrice] = []
+
+with open("comma_delimited_stock_prices.csv") as f:
+    reader = csv.reader(f)
+    for row in reader:
+        maybe_stock = try_parse_row(row)
+        if maybe_stock is None:
+            print(f"skipping invalid row: {row}")
+        else:
+            data.append(maybe_stock)
+
+# Check some more data
 from dateutil.parser import parse
 import csv
 
@@ -156,6 +260,8 @@ maybe_data = [try_parse_row(row) for row in rows]
 # Make sure they all loaded successfully:
 assert maybe_data
 assert all(sp is not None for sp in maybe_data)
+
+# --- Manipulieren von Daten
 
 # This is just to make mypy happy
 data = [sp for sp in maybe_data if sp is not None]
@@ -232,6 +338,8 @@ avg_daily_change = {
 # October is the best month
 assert avg_daily_change[10] == max(avg_daily_change.values())
 
+# --- Umskalieren
+
 from scratch.linear_algebra import distance
 
 a_to_b = distance([63, 150], [67, 160])        # 10.77
@@ -285,9 +393,29 @@ means, stdevs = scale(rescale(vectors))
 assert means == [0, 0, 1]
 assert stdevs == [1, 1, 0]
 
+# --- Exkurs: tqdm
 
 import tqdm
 
+from typing import List
+
+def primes_up_to(n: int) -> List[int]:
+    primes = [2]
+
+    with tqdm.trange(3, n) as t:
+        for i in t:
+            # i is prime if no smaller prime divides it.
+            i_is_prime = not any(i % p == 0 for p in primes)
+            if i_is_prime:
+                primes.append(i)
+
+            t.set_description(f"{len(primes)} primes")
+
+    return primes
+
+my_primes = primes_up_to(100_000)
+
+# --- Hauptkomponentenanalyse
 
 pca_data = [
 [20.9666776351559,-13.1138080189357],
@@ -391,12 +519,30 @@ pca_data = [
 [25.2049825789225,-14.1592086208169]
 ]
 
+plt.title("Figure 10-6: Data with 'wrong' axis")
+plt.scatter([v_i[0] for v_i in pca_data], [v_i[1] for v_i in pca_data])
+plt.xlim(-20, 50)
+plt.ylim(-40, 10)
+#plt.savefig("im/10-06_data_with_wrong_axix.png")
+plt.show()
+plt.gca().clear()
+
 from scratch.linear_algebra import subtract
 
 def de_mean(data: List[Vector]) -> List[Vector]:
     """Recenters the data to have mean 0 in every dimension"""
     mean = vector_mean(data)
     return [subtract(vector, mean) for vector in data]
+
+data = de_mean(pca_data)
+
+plt.title("Figure 10-7: Data after subtraction of mean")
+plt.scatter([v_i[0] for v_i in data], [v_i[1] for v_i in data])
+plt.xlim(-40, 30)
+plt.ylim(-30, 30)
+#plt.savefig("im/10-07_data_after_substraction_of_mean.png")
+plt.show()
+plt.gca().clear()
 
 from scratch.linear_algebra import magnitude
 
@@ -445,6 +591,23 @@ def project(v: Vector, w: Vector) -> Vector:
     projection_length = dot(v, w)
     return scalar_multiply(projection_length, w)
 
+fpc = first_principal_component(data)
+
+assert 0.923 < fpc[0] < 0.925
+assert 0.382 < fpc[1] < 0.384
+
+dir = [project(v, fpc) for v in data[:20]]
+
+plt.title("Figure 10-8: First principal component")
+plt.scatter([v_i[0] for v_i in data], [v_i[1] for v_i in data])
+# direction of first principal component
+plt.plot([v_i[0] for v_i in dir], [v_i[1] for v_i in dir], "r") 
+plt.xlim(-40, 30)
+plt.ylim(-30, 30)
+#plt.savefig("im/10-08_first_principal_component.png")
+plt.show()
+plt.gca().clear()
+
 from scratch.linear_algebra import subtract
 
 def remove_projection_from_vector(v: Vector, w: Vector) -> Vector:
@@ -453,6 +616,16 @@ def remove_projection_from_vector(v: Vector, w: Vector) -> Vector:
 
 def remove_projection(data: List[Vector], w: Vector) -> List[Vector]:
     return [remove_projection_from_vector(v, w) for v in data]
+
+linear_data = remove_projection(data, component)
+
+plt.title("Figure 10-9: Data after removal of first principal component")
+plt.scatter([v_i[0] for v_i in linear_data], [v_i[1] for v_i in linear_data])
+plt.xlim(-10, 10)
+plt.ylim(-8, 8)
+#plt.savefig("im/10-09_data_after_removal_of_first_principal_component.png")
+plt.show()
+plt.gca().clear()
 
 def pca(data: List[Vector], num_components: int) -> List[Vector]:
     components: List[Vector] = []
@@ -469,133 +642,25 @@ def transform_vector(v: Vector, components: List[Vector]) -> Vector:
 def transform(data: List[Vector], components: List[Vector]) -> List[Vector]:
     return [transform_vector(v, components) for v in data]
 
+components = pca(data, 2)
+dir0 = [project(v, components[0]) for v in data[:20]]
+dir1 = [project(v, components[1]) for v in data]
+
+plt.title("Figure 10-10: First two principal components")
+plt.scatter([v_i[0] for v_i in data], [v_i[1] for v_i in data])
+# direction of first principal component
+plt.plot([v_i[0] for v_i in dir0], [v_i[1] for v_i in dir0], "r") 
+# direction of second principal component
+plt.plot([v_i[0] for v_i in dir1], [v_i[1] for v_i in dir1], "r") 
+plt.xlim(-40, 30)
+plt.ylim(-30, 30)
+#plt.savefig("im/10-10_first_two_principal_components.png")
+plt.show()
+plt.gca().clear()
+
+# --- Main
+
 def main():
-
-    # I don't know why this is necessary
-    plt.gca().clear()
-    plt.close()
-
-    import random
-    from scratch.probability import inverse_normal_cdf
-
-    random.seed(0)
-
-    # uniform between -100 and 100
-    uniform = [200 * random.random() - 100 for _ in range(10000)]
-
-    # normal distribution with mean 0, standard deviation 57
-    normal = [57 * inverse_normal_cdf(random.random())
-              for _ in range(10000)]
-
-    plot_histogram(uniform, 10, "Uniform Histogram")
-
-
-
-    plt.savefig('im/working_histogram_uniform.png')
-    plt.gca().clear()
-    plt.close()
-
-    plot_histogram(normal, 10, "Normal Histogram")
-
-
-    plt.savefig('im/working_histogram_normal.png')
-    plt.gca().clear()
-
-    from scratch.statistics import correlation
-
-    print(correlation(xs, ys1))      # about 0.9
-    print(correlation(xs, ys2))      # about -0.9
-
-
-
-    from typing import List
-
-    # Just some random data to show off correlation scatterplots
-    num_points = 100
-
-    def random_row() -> List[float]:
-       row = [0.0, 0, 0, 0]
-       row[0] = random_normal()
-       row[1] = -5 * row[0] + random_normal()
-       row[2] = row[0] + row[1] + 5 * random_normal()
-       row[3] = 6 if row[2] > -2 else 0
-       return row
-
-    random.seed(0)
-    # each row has 4 points, but really we want the columns
-    corr_rows = [random_row() for _ in range(num_points)]
-
-    corr_data = [list(col) for col in zip(*corr_rows)]
-
-    # corr_data is a list of four 100-d vectors
-    num_vectors = len(corr_data)
-    fig, ax = plt.subplots(num_vectors, num_vectors)
-
-    for i in range(num_vectors):
-        for j in range(num_vectors):
-
-            # Scatter column_j on the x-axis vs column_i on the y-axis,
-            if i != j: ax[i][j].scatter(corr_data[j], corr_data[i])
-
-            # unless i == j, in which case show the series name.
-            else: ax[i][j].annotate("series " + str(i), (0.5, 0.5),
-                                    xycoords='axes fraction',
-                                    ha="center", va="center")
-
-            # Then hide axis labels except left and bottom charts
-            if i < num_vectors - 1: ax[i][j].xaxis.set_visible(False)
-            if j > 0: ax[i][j].yaxis.set_visible(False)
-
-    # Fix the bottom right and top left axis labels, which are wrong because
-    # their charts only have text in them
-    ax[-1][-1].set_xlim(ax[0][-1].get_xlim())
-    ax[0][0].set_ylim(ax[0][1].get_ylim())
-
-    # plt.show()
-
-
-
-    plt.savefig('im/working_scatterplot_matrix.png')
-    plt.gca().clear()
-    plt.close()
-    plt.clf()
-
-    import csv
-
-    data: List[StockPrice] = []
-
-    with open("comma_delimited_stock_prices.csv") as f:
-        reader = csv.reader(f)
-        for row in reader:
-            maybe_stock = try_parse_row(row)
-            if maybe_stock is None:
-                print(f"skipping invalid row: {row}")
-            else:
-                data.append(maybe_stock)
-
-    from typing import List
-
-    def primes_up_to(n: int) -> List[int]:
-        primes = [2]
-
-        with tqdm.trange(3, n) as t:
-            for i in t:
-                # i is prime if no smaller prime divides it.
-                i_is_prime = not any(i % p == 0 for p in primes)
-                if i_is_prime:
-                    primes.append(i)
-
-                t.set_description(f"{len(primes)} primes")
-
-        return primes
-
-    my_primes = primes_up_to(100_000)
-
-
-
-    de_meaned = de_mean(pca_data)
-    fpc = first_principal_component(de_meaned)
-    assert 0.923 < fpc[0] < 0.925
-    assert 0.382 < fpc[1] < 0.384
+    pass
 
 if __name__ == "__main__": main()

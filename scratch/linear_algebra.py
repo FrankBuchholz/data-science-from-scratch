@@ -1,5 +1,6 @@
 from typing import List
 
+# Type definition
 Vector = List[float]
 
 height_weight_age = [70,  # inches,
@@ -14,7 +15,6 @@ grades = [95,   # exam1
 def add(v: Vector, w: Vector) -> Vector:
     """Adds corresponding elements"""
     assert len(v) == len(w), "vectors must be the same length"
-
     return [v_i + w_i for v_i, w_i in zip(v, w)]
 
 assert add([1, 2, 3], [4, 5, 6]) == [5, 7, 9]
@@ -22,7 +22,6 @@ assert add([1, 2, 3], [4, 5, 6]) == [5, 7, 9]
 def subtract(v: Vector, w: Vector) -> Vector:
     """Subtracts corresponding elements"""
     assert len(v) == len(w), "vectors must be the same length"
-
     return [v_i - w_i for v_i, w_i in zip(v, w)]
 
 assert subtract([5, 7, 9], [4, 5, 6]) == [1, 2, 3]
@@ -31,11 +30,9 @@ def vector_sum(vectors: List[Vector]) -> Vector:
     """Sums all corresponding elements"""
     # Check that vectors is not empty
     assert vectors, "no vectors provided!"
-
     # Check the vectors are all the same size
     num_elements = len(vectors[0])
     assert all(len(v) == num_elements for v in vectors), "different sizes!"
-
     # the i-th element of the result is the sum of every vector[i]
     return [sum(vector[i] for vector in vectors)
             for i in range(num_elements)]
@@ -58,7 +55,6 @@ assert vector_mean([[1, 2], [3, 4], [5, 6]]) == [3, 4]
 def dot(v: Vector, w: Vector) -> float:
     """Computes v_1 * w_1 + ... + v_n * w_n"""
     assert len(v) == len(w), "vectors must be same length"
-
     return sum(v_i * w_i for v_i, w_i in zip(v, w))
 
 assert dot([1, 2, 3], [4, 5, 6]) == 32  # 1 * 4 + 2 * 5 + 3 * 6
@@ -84,7 +80,6 @@ def squared_distance(v: Vector, w: Vector) -> float:
 def distance(v: Vector, w: Vector) -> float:
     """Computes the distance between v and w"""
     return math.sqrt(squared_distance(v, w))
-
 
 def distance(v: Vector, w: Vector) -> float:  # type: ignore
     return magnitude(subtract(v, w))

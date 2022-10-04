@@ -1,5 +1,6 @@
 
-# Just stick some data there
+# Just stick some data 
+# with keyword will automatically close the file mentioned in open function
 with open('email_addresses.txt', 'w') as f:
     f.write("joelgrus@gmail.com\n")
     f.write("joel@m.datasciencester.com\n")
@@ -317,8 +318,8 @@ def main():
             if len(tweets) >= 100:
                 self.disconnect()
     
-        def on_error(self, status_code, data):
-            print(status_code, data)
+        def on_error(self, status_code, data, headers=None):
+            print(status_code, data, headers)
             self.disconnect()
     
     stream = MyStreamer(CONSUMER_KEY, CONSUMER_SECRET,

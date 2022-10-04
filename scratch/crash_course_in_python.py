@@ -1,11 +1,13 @@
-
 """
 This is just code for the introduction to Python.
 It also won't be used anywhere else in the book.
+
+If this is your first time using Python, you should definitely check out
+the tutorial on the Internet at https://docs.python.org/3.9/tutorial/.
 """
 # type: ignore
 
-# The pound sign marks the start of a comment. Python itself
+# The hash sign marks the start of a comment. Python itself
 # ignores the comments, but they're helpful for anyone reading the code.
 for i in [1, 2, 3, 4, 5]:
     print(i)                    # first line in "for i" block
@@ -60,11 +62,9 @@ def apply_to_one(f):
 my_double = double             # refers to the previously defined function
 x = apply_to_one(my_double)    # equals 2
 
-
 assert x == 2
 
 y = apply_to_one(lambda x: x + 4)      # equals 5
-
 
 assert y == 5
 
@@ -98,12 +98,10 @@ double_quoted_string = "data science"
 tab_string = "\t"       # represents the tab character
 len(tab_string)         # is 1
 
-
 assert len(tab_string) == 1
 
 not_tab_string = r"\t"  # represents the characters '\' and 't'
 len(not_tab_string)     # is 2
-
 
 assert len(not_tab_string) == 2
 
@@ -131,7 +129,6 @@ list_of_lists = [integer_list, heterogeneous_list, []]
 list_length = len(integer_list)     # equals 3
 list_sum    = sum(integer_list)     # equals 6
 
-
 assert list_length == 3
 assert list_sum == 6
 
@@ -142,7 +139,6 @@ one = x[1]           # equals 1
 nine = x[-1]         # equals 9, 'Pythonic' for last element
 eight = x[-2]        # equals 8, 'Pythonic' for next-to-last element
 x[0] = -1            # now x is [-1, 1, 2, 3, ..., 9]
-
 
 assert x == [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
@@ -156,7 +152,6 @@ copy_of_x = x[:]                    # [-1, 1, 2, ..., 9]
 every_third = x[::3]                 # [-1, 3, 6, 9]
 five_to_three = x[5:2:-1]            # [5, 4, 3]
 
-
 assert every_third == [-1, 3, 6, 9]
 assert five_to_three == [5, 4, 3]
 
@@ -166,12 +161,10 @@ assert five_to_three == [5, 4, 3]
 x = [1, 2, 3]
 x.extend([4, 5, 6])     # x is now [1, 2, 3, 4, 5, 6]
 
-
 assert x == [1, 2, 3, 4, 5, 6]
 
 x = [1, 2, 3]
 y = x + [4, 5, 6]       # y is [1, 2, 3, 4, 5, 6]; x is unchanged
-
 
 assert x == [1, 2, 3]
 assert y == [1, 2, 3, 4, 5, 6]
@@ -181,13 +174,11 @@ x.append(0)      # x is now [1, 2, 3, 0]
 y = x[-1]        # equals 0
 z = len(x)       # equals 4
 
-
 assert x == [1, 2, 3, 0]
 assert y == 0
 assert z == 4
 
 x, y = [1, 2]    # now x is 1, y is 2
-
 
 assert x == 1
 assert y == 2
@@ -213,7 +204,6 @@ s, p = sum_and_product(5, 10)  # s is 15, p is 50
 x, y = 1, 2     # now x is 1, y is 2
 x, y = y, x     # Pythonic way to swap variables; now x is 2, y is 1
 
-
 assert x == 2
 assert y == 1
 
@@ -222,7 +212,6 @@ empty_dict2 = dict()                # less Pythonic
 grades = {"Joel": 80, "Tim": 95}    # dictionary literal
 
 joels_grade = grades["Joel"]        # equals 80
-
 
 assert joels_grade == 80
 
@@ -234,14 +223,12 @@ except KeyError:
 joel_has_grade = "Joel" in grades     # True
 kate_has_grade = "Kate" in grades     # False
 
-
 assert joel_has_grade
 assert not kate_has_grade
 
 joels_grade = grades.get("Joel", 0)   # equals 80
 kates_grade = grades.get("Kate", 0)   # equals 0
 no_ones_grade = grades.get("No One")  # default default is None
-
 
 assert joels_grade == 80
 assert kates_grade == 0
@@ -250,7 +237,6 @@ assert no_ones_grade is None
 grades["Tim"] = 99                    # replaces the old value
 grades["Kate"] = 100                  # adds a third entry
 num_students = len(grades)            # equals 3
-
 
 assert num_students == 3
 
@@ -269,11 +255,9 @@ tweet_items  = tweet.items()    # iterable for the (key, value) tuples
 "user" in tweet                 # Pythonic way of checking for keys
 "joelgrus" in tweet_values      # True (slow but the only way to check)
 
-
 assert "user" in tweet_keys
 assert "user" in tweet
 assert "joelgrus" in tweet_values
-
 
 document = ["data", "science", "from", "scratch"]
 
@@ -331,7 +315,6 @@ x = len(s)     # equals 2
 y = 2 in s     # equals True
 z = 3 in s     # equals False
 
-
 hundreds_of_other_words = []  # required for the below code to run
 
 stopwords_list = ["a", "an", "at"] + hundreds_of_other_words + ["yet", "you"]
@@ -346,7 +329,6 @@ num_items = len(item_list)                # 6
 item_set = set(item_list)                 # {1, 2, 3}
 num_distinct_items = len(item_set)        # 3
 distinct_item_list = list(item_set)       # [1, 2, 3]
-
 
 assert num_items == 6
 assert item_set == {1, 2, 3}
@@ -381,14 +363,12 @@ for x in range(10):
 one_is_less_than_two = 1 < 2          # equals True
 true_equals_false = True == False     # equals False
 
-
 assert one_is_less_than_two
 assert not true_equals_false
 
 x = None
-assert x == None, "this is the not the Pythonic way to check for None"
+assert x == None, "this is not the Pythonic way to check for None"
 assert x is None, "this is the Pythonic way to check for None"
-
 
 def some_function_that_returns_a_string():
     return ""
@@ -435,12 +415,10 @@ assert even_squares == [0, 4, 16]
 square_dict = {x: x * x for x in range(5)}  # {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
 square_set  = {x * x for x in [1, -1]}      # {1}
 
-
 assert square_dict == {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
 assert square_set == {1}
 
 zeros = [0 for _ in even_numbers]      # has the same length as even_numbers
-
 
 assert zeros == [0, 0, 0]
 
@@ -539,7 +517,6 @@ even_squares = (x ** 2 for x in evens)
 even_squares_ending_in_six = (x for x in even_squares if x % 10 == 6)
 # and so on
 
-
 assert next(even_squares_ending_in_six) == 16
 assert next(even_squares_ending_in_six) == 36
 assert next(even_squares_ending_in_six) == 196
@@ -609,7 +586,6 @@ list2 = [1, 2, 3]
 # zip is lazy, so you have to do something like the following
 [pair for pair in zip(list1, list2)]    # is [('a', 1), ('b', 2), ('c', 3)]
 
-
 assert [pair for pair in zip(list1, list2)] == [('a', 1), ('b', 2), ('c', 3)]
 
 pairs = [('a', 1), ('b', 2), ('c', 3)]
@@ -630,7 +606,6 @@ def doubler(f):
     # Here we define a new function that keeps a reference to f
     def g(x):
         return 2 * f(x)
-
     # And return that new function.
     return g
 
@@ -695,7 +670,6 @@ def add(a: int, b: int) -> int:
 add(10, 5)           # you'd like this to be OK
 add("hi ", "there")  # you'd like this to be not OK
 
-
 # This is not in the book, but it's needed
 # to make the `dot_product` stubs not error out.
 from typing import List
@@ -732,7 +706,6 @@ from typing import Optional
 
 values: List[int] = []
 best_so_far: Optional[float] = None  # allowed to be either a float or None
-
 
 lazy = True
 

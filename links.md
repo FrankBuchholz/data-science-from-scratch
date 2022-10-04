@@ -23,27 +23,27 @@ Links
 
 ## 2. A Crash Course in Python
 
-http://python.org
+https://www.python.org/
 
 [Anaconda](https://store.continuum.io/cshop/anaconda/)
 
 [pip](https://pypi.python.org/pypi/pip)
 
-[IPython](http://ipython.org/)
+[IPython](https://ipython.org/)
 
-[the Zen of Python](http://legacy.python.org/dev/peps/pep-0020/)
+[the Zen of Python](https://legacy.python.org/dev/peps/pep-0020/)
 
 [official Python tutorial](https://docs.python.org/2/tutorial/)
 
-[official IPython tutorial](http://ipython.org/ipython-doc/2/interactive/tutorial.html)
+[official IPython tutorial](https://ipython.org/ipython-doc/2/interactive/tutorial.html)
 
-[IPython videos and presentations](http://ipython.org/videos.html)
+[IPython videos and presentations](https://ipython.org/videos.html)
 
-[Python for Data Analysis](http://shop.oreilly.com/product/0636920023784.do)
+[Python for Data Analysis](https://www.oreilly.com/library/view/python-for-data/9781449323592/)
 
 ## 3. Visualizing Data
 
-[matplotlib](http://matplotlib.org/)
+[matplotlib](https://matplotlib.org/)
 
 [seaborn](http://www.stanford.edu/~mwaskom/software/seaborn/)
 
@@ -219,13 +219,15 @@ http://en.wikipedia.org/wiki/Decision_tree_learning
 
 [pybrain](http://pybrain.org/)
 
-## 19. Clustering
+## 19. Deep Learning
+
+## 20. Clustering
 
 [RGB color model](http://en.wikipedia.org/wiki/RGB_color_model)
 
 [SciPy](http://www.scipy.org/)
 
-## 20. Natural Language Processing
+## 21. Natural Language Processing
 
 ["What is Data Science"](http://radar.oreilly.com/2010/06/what-is-data-science.html)
 
@@ -235,7 +237,7 @@ http://en.wikipedia.org/wiki/Decision_tree_learning
 
 [gensim](http://radimrehurek.com/gensim/)
 
-## 21. Network Analysis
+## 22. Network Analysis
 
 [Centrality](http://en.wikipedia.org/wiki/Centrality)
 
@@ -243,7 +245,7 @@ http://en.wikipedia.org/wiki/Decision_tree_learning
 
 [Gephi](http://gephi.github.io/)
 
-## 22. Recommender Systems
+## 23. Recommender Systems
 
 [Crab](http://muricoca.github.io/crab/)
 
@@ -251,7 +253,7 @@ http://en.wikipedia.org/wiki/Decision_tree_learning
 
 [Netflix prize](http://www.netflixprize.com/)
 
-## 23. Databases
+## 24. Databases
 
 [SQLite](http://www.sqlite.org/)
 
@@ -263,7 +265,7 @@ http://en.wikipedia.org/wiki/Decision_tree_learning
 
 [NoSQL](http://en.wikipedia.org/wiki/NoSQL)
 
-## 24. Map-Reduce
+## 25. Map-Reduce
 
 [Hadoop](http://hadoop.apache.org/)
 
@@ -275,9 +277,11 @@ http://en.wikipedia.org/wiki/Decision_tree_learning
 
 [Storm](http://storm.incubator.apache.org/)
 
-## 25. Go Forth And Do Data Science
+## 26. Data Ethics
 
-[IPython](http://ipython.org/)
+## 27. Go Forth And Do Data Science
+
+[IPython](https://ipython.org/)
 
 [NumPy](http://www.numpy.org/)
 

@@ -14,7 +14,6 @@ class EmbeddingOptimizer(Optimizer):
             for idx, row in enumerate(grad):
                 if row[0] != 0:
                     break
-
             # Then update just that row.
             for j in range(len(row)):
                 param[idx][j] -= grad[idx][j] * self.lr

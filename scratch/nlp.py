@@ -1,7 +1,9 @@
+# --- Wortwolken
 
 import matplotlib.pyplot as plt
-plt.gca().clear()
 
+# Example:
+# [ (Word, Popularity on Job Postings, Popularity on Resumes), ... ]
 data = [ ("big data", 100, 15), ("Hadoop", 95, 25), ("Python", 75, 50),
          ("R", 50, 40), ("machine learning", 80, 20), ("statistics", 20, 60),
          ("data science", 60, 70), ("analytics", 90, 3),
@@ -10,24 +12,43 @@ data = [ ("big data", 100, 15), ("Hadoop", 95, 25), ("Python", 75, 50),
          ("self-starter", 30, 50), ("customer focus", 65, 15),
          ("thought leadership", 35, 35)]
 
+def text_size(total:int) -> float:
+    # Calculate text size from 8 to 28 depending on sum of popularity
+    return 8 + total / 200 * 20
+
+for word, job_popularity, resume_popularity in data:
+    plt.text(job_popularity, resume_popularity, word,
+                ha='center', va='center',
+                size=text_size(job_popularity + resume_popularity))
+plt.xlabel("Popularity on Job Postings")
+plt.ylabel("Popularity on Resumes")
+plt.axis([ 0,100, 0,100 ])
+plt.xticks([])
+plt.yticks([])
+plt.show()
+
+# --- N_Gramm-Sprachmodelle
 
 from matplotlib import pyplot as plt
 
-def fix_unicode(text: str) -> str:
-    return text.replace(u"\u2019", "'")
-
-import re
-from bs4 import BeautifulSoup
-import requests
+import requests                # GET http requests
+from bs4 import BeautifulSoup  # Parse html
+import re                      # Regular expression
+import random
 
 url = "https://www.oreilly.com/ideas/what-is-data-science"
 html = requests.get(url).text
+
 soup = BeautifulSoup(html, 'html5lib')
 
-content = soup.find("div", "article-body")   # find article-body div
+content = soup.find("div", "main-post-radar-content")   # find main-post-radar-content div
+
 regex = r"[\w']+|[\.]"                       # matches a word or a period
 
 document = []
+
+def fix_unicode(text: str) -> str:
+    return text.replace(u"\u2019", "'")
 
 for paragraph in content("p"):
     words = re.findall(regex, fix_unicode(paragraph.text))
@@ -48,14 +69,18 @@ def generate_using_bigrams() -> str:
         result.append(current)                         # append it to results
         if current == ".": return " ".join(result)     # if "." we're done
 
+# Show some samples
+for x in range(0, 10):
+    print(generate_using_bigrams())
+
+# ---
+
 trigram_transitions = defaultdict(list)
 starts = []
 
 for prev, current, next in zip(document, document[1:], document[2:]):
-
     if prev == ".":              # if the previous "word" was a period
         starts.append(current)   # then this is a start word
-
     trigram_transitions[(prev, current)].append(next)
 
 def generate_using_trigrams() -> str:
@@ -65,12 +90,18 @@ def generate_using_trigrams() -> str:
     while True:
         next_word_candidates = trigram_transitions[(prev, current)]
         next_word = random.choice(next_word_candidates)
-
+        #
         prev, current = current, next_word
         result.append(current)
-
+        #
         if current == ".":
             return " ".join(result)
+
+# Show some samples
+for x in range(0, 10):
+    print(generate_using_trigrams())
+
+# --- Grammatiken
 
 from typing import List, Dict
 
@@ -117,6 +148,12 @@ def expand(grammar: Grammar, tokens: List[str]) -> List[str]:
 def generate_sentence(grammar: Grammar) -> List[str]:
     return expand(grammar, ["_S"])
 
+# Show some samples
+for x in range(0, 10):
+    print(generate_sentence(grammar))
+
+# --- Exkurs: Gibbs-Sampling
+
 from typing import Tuple
 import random
 
@@ -155,6 +192,8 @@ def compare_distributions(num_samples: int = 1000) -> Dict[int, List[int]]:
         counts[gibbs_sample()][0] += 1
         counts[direct_sample()][1] += 1
     return counts
+
+# --- Themenmodellierung
 
 def sample_from(weights: List[float]) -> int:
     """returns i with probability weights[i] / sum(weights)"""
@@ -287,6 +326,8 @@ for document, topic_counts in zip(documents, document_topic_counts):
         if count > 0:
             print(topic_names[topic], count)
     print()
+
+# --- Wortvektoren
 
 from scratch.linear_algebra import dot, Vector
 import math
@@ -443,6 +484,8 @@ class TextEmbedding(Embedding):
 
         return scores[:n]
 
+# --- Rekurrente neuronale Netzwerke
+
 from scratch.deep_learning import tensor_apply, tanh
 
 class SimpleRnn(Layer):
@@ -502,6 +545,8 @@ class SimpleRnn(Layer):
 
     def grads(self) -> Iterable[Tensor]:
         return [self.w_grad, self.u_grad, self.b_grad]
+
+# --- Main
 
 def main():
     from matplotlib import pyplot as plt
@@ -643,7 +688,7 @@ def main():
     companies = list({b.text
                       for b in soup("b")
                       if "h4" in b.get("class", ())})
-    assert len(companies) == 101
+    assert len(companies) == 102
     
     vocab = Vocabulary([c for company in companies for c in company])
     
